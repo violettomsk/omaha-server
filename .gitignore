@@ -1,0 +1,4 @@
+bitpop/
+*.json
+*.log
+*.pyc
