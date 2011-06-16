@@ -27,8 +27,13 @@ from xml.dom.minidom import parseString
 
 class UpdateXMLProcessor(resource.Resource):
     isLeaf = True
-    updaterAppId="{430FD4D0-B729-4F61-AA34-91526481799D}"
-    bitpopAppId="{8A69D345-D564-463C-AFF1-A69D9E530F96}"
+    # NB!: do not use the following UUIDs
+    # they are already in use for identifying software packages
+    # use uuidgen.exe on Windows to generate new UUIDs
+    # updaterAppId="{430FD4D0-B729-4F61-AA34-91526481799D}"
+    # bitpopAppId="{8A69D345-D564-463C-AFF1-A69D9E530F96}"
+    updaterAppId = '{32E4419B-847F-4870-8640-073EF02C1890}'
+    bitpopAppId =  '{5B73C40A-84CA-406C-B1FD-5863DA4A41EE}'
     validAppIds=set([updaterAppId, bitpopAppId])
 
     def render_POST(self, request):
@@ -109,7 +114,10 @@ class UpdateXMLProcessor(resource.Resource):
                                         updateElementOut.setAttribute('status', 'error-hash')
                                     if not hashError and os.path.exists(updatePath):
                                         updateElementOut.setAttribute('Version', updateInfo['latest'])
-                                        updateElementOut.setAttribute('arguments', '--do-not-launch-chrome')
+                                        if context['app']['version']:
+                                            updateElementOut.setAttribute('arguments', '--do-not-launch-chrome')
+                                        else:
+                                            updateElementOut.setAttribute('arguments', '')
                                         updateElementOut.setAttribute('codebase', updateUrl)
                                         updateElementOut.setAttribute('hash', hash)
                                         updateElementOut.setAttribute('needsadmin', 'false')
