@@ -76,7 +76,7 @@ class UpdateManager(resource.Resource):
             if bitpopInfo.has_key('delta') and type(bitpopInfo['delta']) == type([]):
                 for deltaFromVersion in bitpopInfo['delta']:
                     output += """
-                <li><a href={0}>delta update from v{1}</a></li>""".format(
+                <li><a href="{0}">delta update from v{1}</a></li>""".format(
                         getUpdateURL(bitpopInfo['latest'], deltaFromVersion),
                         deltaFromVersion)
         output += """

@@ -15,8 +15,12 @@
 #   You should have received a copy of the GNU General Public License
 #   along with omaha-server.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+sys.path.append('.')
+
 from twisted.application import service, internet
 from twisted.web import server, resource
+from twisted.internet import ssl
 from twisted.web.static import File
 from chained_ssl import ChainedOpenSSLContextFactory
 from update import UpdateXMLProcessor
@@ -58,12 +62,23 @@ insecErr.putChild("update2", insecUpd)
 httpSite = server.Site(insecureDomainResource)
 httpsSite = server.Site(root)
 
-application = service.Application('House of Life Update Portal')
+if os.name == 'posix':
+  # run under user 'nobody'
+  application = service.Application('House of Life Update Portal', uid=Config.uid, gid=Config.gid)
+else:
+  application = service.Application('House of Life Update Portal')
+
 application.management = ResourceScriptWrapper('admin.py')
-httpService = internet.TCPServer(80, httpSite, interface=Config.domainName)
-httpsService = internet.SSLServer(443, httpsSite, ChainedOpenSSLContextFactory(
-                                      privateKeyFileName="cert/privkey.pem",
-                                      certificateChainFileName="cert/server_chain.pem"),
+httpService = internet.TCPServer(Config.httpPort, httpSite, interface=Config.domainName)
+httpsService = internet.SSLServer(Config.httpsPort, httpsSite,
+                                      # Use custom factory for certificate chain
+                                      ChainedOpenSSLContextFactory(
+                                        privateKeyFileName=Config.privateKeyFile,
+                                        certificateChainFileName=Config.certificateChainFile)
+                                    if Config.useCertificateChain else
+                                      # Use default factory for single certificate
+                                      ssl.DefaultOpenSSLContextFactory(
+                                        Config.privateKeyFile, Config.certificateFile),
                                   interface=Config.domainName)
 httpService.setServiceParent(application)
 httpsService.setServiceParent(application)

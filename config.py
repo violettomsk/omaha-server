@@ -15,12 +15,28 @@
 #   You should have received a copy of the GNU General Public License
 #   along with omaha-server.  If not, see <http://www.gnu.org/licenses/>.
 
+import pwd, os
+
 class Config:
-    installerName = 'bitpopinstall.exe'
+    # SSL config
+    useCertificateChain = True
+    certificateChainFile = 'cert/server_chain.pem'
+    certificateFile = 'cert/server_cert.pem'
+    privateKeyFile = 'cert/privkey.pem'
+    
+    # Network config
+    httpPort = 80
+    httpsPort = 443
     domainName = 'localhost'
     secureDomain = 'https://' + domainName
     insecureDomain = 'http://' + domainName
+    
+    # Application config
     bitpopDirectory = 'bitpop'
+    installerName = 'bitpopinstall.exe'
     bitpopUpdateInfoFile = 'bitpop.json'
     bitpopNewUpdateInfoFile = 'bitpop_new.json'
   
+    userName = 'nobody'
+    uid = pwd.getpwnam(userName).pw_uid if os.name == 'posix' else 0
+    gid = pwd.getpwnam(userName).pw_gid if os.name == 'posix' else 0

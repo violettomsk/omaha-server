@@ -60,7 +60,7 @@ class UpdateXMLProcessor(resource.Resource):
             osInfo = (node.getAttribute('platform'),
                       node.getAttribute('version'),
                       node.getAttribute('sp'))
-            log.msg("OS platform=%s, version=%s, sp=%s" % osInfo)
+            #log.msg("OS platform=%s, version=%s, sp=%s" % osInfo)
             context['os'] = dict(zip(['platform', 'version', 'sp'], osInfo))
             break
 
@@ -152,7 +152,7 @@ class UpdateXMLProcessor(resource.Resource):
             # append our app response to resulting XML
             outDoc.documentElement.appendChild(appOut)
 
-        log.msg('\nINPUT: ----------\n%s\n\nOUTPUT: ---------\n%s' % (doc.toprettyxml(encoding='utf-8'), outDoc.toprettyxml(encoding='utf-8')))
+        #log.msg('\nINPUT: ----------\n%s\n\nOUTPUT: ---------\n%s' % (doc.toprettyxml(encoding='utf-8'), outDoc.toprettyxml(encoding='utf-8')))
         return outDoc.toprettyxml(encoding='utf-8')
     def processEvent(self, event, context):
         return
