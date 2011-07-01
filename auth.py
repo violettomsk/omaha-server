@@ -15,13 +15,9 @@
 #   You should have received a copy of the GNU General Public License
 #   along with omaha-server.  If not, see <http://www.gnu.org/licenses/>.
 
-cache()
-
 from zope.interface import implements
-from twisted.cred.portal import IRealm, Portal
-from twisted.cred.checkers import FilePasswordDB
+from twisted.cred.portal import IRealm
 from twisted.web.resource import IResource
-from twisted.web.guard import HTTPAuthSessionWrapper, DigestCredentialFactory
 from admin import UpdateManager
 
 class PublicHTMLRealm(object):
@@ -33,8 +29,3 @@ class PublicHTMLRealm(object):
             resc.realm = self
             return (IResource, resc, lambda: None)
         raise NotImplementedError()
-
-portal = Portal(PublicHTMLRealm(), [FilePasswordDB('httpd.password')])
-
-credentialFactory = DigestCredentialFactory("md5", "House of Life Updates")
-resource = HTTPAuthSessionWrapper(portal, [credentialFactory])

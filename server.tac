@@ -18,6 +18,7 @@
 import sys
 sys.path.append('.')
 
+from encodings import hex_codec, base64_codec
 from twisted.application import service, internet
 from twisted.web import server, resource
 from twisted.internet import ssl
@@ -26,6 +27,10 @@ from chained_ssl import ChainedOpenSSLContextFactory
 from update import UpdateXMLProcessor
 from config import Config
 from twisted.web.script import ResourceScriptWrapper
+from twisted.web.guard import HTTPAuthSessionWrapper, DigestCredentialFactory
+from twisted.cred.portal import Portal
+from twisted.cred.checkers import FilePasswordDB
+from auth import PublicHTMLRealm
 import os
 
 if not os.path.exists(Config.bitpopDirectory):
@@ -39,7 +44,10 @@ err = resource.ForbiddenResource()
 root.putChild("service", err)
 upd = UpdateXMLProcessor()
 err.putChild("update2", upd)
-admin = ResourceScriptWrapper('auth.rpy')
+
+portal = Portal(PublicHTMLRealm(), [FilePasswordDB('httpd.password')])
+credentialFactory = DigestCredentialFactory("md5", "House of Life Updates")
+admin = HTTPAuthSessionWrapper(portal, [credentialFactory])
 err.putChild('admin', admin)
 
 css = resource.ForbiddenResource()

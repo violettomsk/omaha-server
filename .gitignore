@@ -5,3 +5,9 @@ bitpop/
 cert/*
 !cert/README
 .idea/
+*.tgz
+*.tar.gz
+*.tar.bz2
+*.zip
+*.rar
+*.7z
