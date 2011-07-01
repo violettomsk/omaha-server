@@ -2,6 +2,6 @@ bitpop/
 *.json
 *.log
 *.pyc
-cert/
+cert/*
 !cert/README
 .idea/
