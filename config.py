@@ -15,18 +15,20 @@
 #   You should have received a copy of the GNU General Public License
 #   along with omaha-server.  If not, see <http://www.gnu.org/licenses/>.
 
-import pwd, os
+import os
+if os.name == 'posix':
+  import pwd
 
 class Config:
     # SSL config
     useCertificateChain = True
-    certificateChainFile = 'cert/server_chain.pem'
-    certificateFile = 'cert/server_cert.pem'
-    privateKeyFile = 'cert/privkey.pem'
+    certificateChainFile = 'cert/gd_bundle.crt'
+    certificateFile = 'cert/tools.bitpop.com.crt'
+    privateKeyFile = 'cert/bitpopkey.key'
     
     # Network config
-    httpPort = 80
-    httpsPort = 443
+    httpPort = 8081
+    httpsPort = 8083
     domainName = 'localhost'
     secureDomain = 'https://' + domainName
     insecureDomain = 'http://' + domainName

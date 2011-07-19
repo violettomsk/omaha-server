@@ -16,7 +16,7 @@ from twisted.internet import ssl
 from OpenSSL import SSL
 
 class ChainedOpenSSLContextFactory(ssl.DefaultOpenSSLContextFactory):
-    def __init__(self, privateKeyFileName, certificateChainFileName,
+    def __init__(self, privateKeyFileName, certificateChainFileName, certificateFileName,
                  sslmethod=SSL.SSLv23_METHOD):
         """
         @param privateKeyFileName: Name of a file containing a private key
@@ -25,11 +25,13 @@ class ChainedOpenSSLContextFactory(ssl.DefaultOpenSSLContextFactory):
         """
         self.privateKeyFileName = privateKeyFileName
         self.certificateChainFileName = certificateChainFileName
+        self.certificateFileName = certificateFileName
         self.sslmethod = sslmethod
         self.cacheContext()
 
     def cacheContext(self):
         ctx = SSL.Context(self.sslmethod)
         ctx.use_certificate_chain_file(self.certificateChainFileName)
+        ctx.use_certificate_file(self.certificateFileName)
         ctx.use_privatekey_file(self.privateKeyFileName)
         self._context = ctx
