@@ -67,7 +67,7 @@ insecErr.putChild("update2", insecUpd)
 httpSite = server.Site(insecureDomainResource)
 httpsSite = server.Site(root)
 
-if False:# os.name == 'posix':
+if os.name == 'posix' and os.getuid() == 0:
   # run under user 'nobody'
   application = service.Application('House of Life Update Portal', uid=Config.uid, gid=Config.gid)
 else:

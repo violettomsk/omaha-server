@@ -29,7 +29,7 @@ class Config:
     # Network config
     httpPort = 8081
     httpsPort = 8083
-    domainName = 'localhost'
+    domainName = 'tools.bitpop.com'
     secureDomain = 'https://' + domainName
     insecureDomain = 'http://' + domainName
     
