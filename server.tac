@@ -33,6 +33,10 @@ from twisted.cred.checkers import FilePasswordDB
 from auth import PublicHTMLRealm
 import os
 
+class NoListingDir(File):
+  def directoryListing(self):
+    return resource.ForbiddenResource()
+    
 if not os.path.exists(Config.bitpopDirectory):
     os.mkdir(Config.bitpopDirectory, 0755)
 if not os.path.isdir(Config.bitpopDirectory):
@@ -50,18 +54,11 @@ credentialFactory = DigestCredentialFactory("md5", "House of Life Updates")
 admin = HTTPAuthSessionWrapper(portal, [credentialFactory])
 err.putChild('admin', admin)
 
-css = resource.ForbiddenResource()
-css.putChild('style.css', File('css/style.css'))
-css.putChild('upload.css', File('css/upload.css'))
-root.putChild('css', css)
-
-js = resource.ForbiddenResource()
-js.putChild('upload.js', File('js/upload.js'))
-root.putChild('js', js)
+root.putChild('css', NoListingDir('css'))
+root.putChild('js', NoListingDir('js'))
 
 insecureDomainResource = resource.ForbiddenResource()
-bitpopDir = File(Config.bitpopDirectory)
-insecureDomainResource.putChild(Config.bitpopDirectory, bitpopDir)
+insecureDomainResource.putChild(Config.bitpopDirectory, NoListingDir(Config.bitpopDirectory))
 insecErr = resource.ForbiddenResource()
 insecureDomainResource.putChild("service", insecErr)
 insecUpd = UpdateXMLProcessor()
@@ -70,19 +67,19 @@ insecErr.putChild("update2", insecUpd)
 httpSite = server.Site(insecureDomainResource)
 httpsSite = server.Site(root)
 
-if os.name == 'posix':
+if False:# os.name == 'posix':
   # run under user 'nobody'
   application = service.Application('House of Life Update Portal', uid=Config.uid, gid=Config.gid)
 else:
   application = service.Application('House of Life Update Portal')
 
-application.management = ResourceScriptWrapper('admin.py')
 httpService = internet.TCPServer(Config.httpPort, httpSite, interface=Config.domainName)
 httpsService = internet.SSLServer(Config.httpsPort, httpsSite,
                                       # Use custom factory for certificate chain
                                       ChainedOpenSSLContextFactory(
                                         privateKeyFileName=Config.privateKeyFile,
-                                        certificateChainFileName=Config.certificateChainFile)
+                                        certificateChainFileName=Config.certificateChainFile,
+                                        certificateFileName=Config.certificateFile)
                                     if Config.useCertificateChain else
                                       # Use default factory for single certificate
                                       ssl.DefaultOpenSSLContextFactory(
