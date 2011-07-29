@@ -185,7 +185,17 @@ a:hover { color: #036; }
  * Author: Crystalnix <vgachkaylo@crystalnix.com>
  */
 html {
-    margin: 15px;
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    width:940px;
+    margin: 0 auto;
+    padding: 15px;
+    
+    border-left: solid 1px #ccc;
+    border-right: solid 1px #ccc;
 }
 
 h1 {
@@ -194,7 +204,7 @@ h1 {
 }
 
 h2 {
-    font-size: 130%;
+    font-size: 110%;
     margin-bottom: 0.3em;
 }
 
@@ -202,12 +212,18 @@ p, ul {
     margin: 1.5em 0;
 }
 
+#main { 
+  display:table;
+  width: 100%;
+}
+#win_updates, #mac_updates {
+  display: table-cell;
+  width: 50%;
+}
 
-
-
-
-
-
+h2 img {
+  vertical-align: middle;
+}
 
 
 

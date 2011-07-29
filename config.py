@@ -20,6 +20,8 @@ if os.name == 'posix':
   import pwd
 
 class Config:
+    isProduction = False
+  
     # SSL config
     useCertificateChain = True
     certificateChainFile = 'cert/gd_bundle.crt'
@@ -29,7 +31,7 @@ class Config:
     # Network config
     httpPort = 8081
     httpsPort = 8083
-    domainName = 'tools.bitpop.com'
+    domainName = 'localhost'
     secureDomain = 'https://' + domainName
     insecureDomain = 'http://' + domainName
     
@@ -38,6 +40,8 @@ class Config:
     installerName = 'bitpopinstall.exe'
     bitpopUpdateInfoFile = 'bitpop.json'
     bitpopNewUpdateInfoFile = 'bitpop_new.json'
+    macActiveVersionFile = 'mac_active.txt'
+    dsaPrivateKeyFile = 'dsa_priv.pem'
   
     userName = 'nobody'
     uid = pwd.getpwnam(userName).pw_uid if os.name == 'posix' else 0

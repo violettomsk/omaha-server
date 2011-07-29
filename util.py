@@ -27,6 +27,9 @@ def getPathToUpdate(versionTo, versionFrom = None):
 def getUpdateURL(versionTo, versionFrom = None):
     return Config.insecureDomain + '/' + getPathToUpdate(versionTo, versionFrom)
 
+def getUpdateURLMac(dmg_path):
+    return Config.insecureDomain + '/' + Config.bitpopDirectory + '/mac/' + dmg_path
+
 def loadJsonAndCheckIfLatestKeyExists(filename):
     latestExists = True
     jsonInfo = None

@@ -20,7 +20,8 @@ from config import Config
 from new_full import NewFullResource
 from new_delta import NewDeltaResource
 from switch import SwitchResource
-
+#from mac_update import MacUpdateManager
+from mac_db_helper import MacDbHelper
 from util import *
 
 class UpdateManager(resource.Resource):
@@ -38,6 +39,8 @@ class UpdateManager(resource.Resource):
         self.putChild('', self)
 
     def render_GET(self, request):
+        macdb = MacDbHelper()
+        
         mainDict = loadJsonAndCheckIfLatestKeyExists(Config.bitpopUpdateInfoFile)
         bitpopInfo = mainDict['jsonData']
         latestExists = mainDict['latestExists']
@@ -58,13 +61,16 @@ class UpdateManager(resource.Resource):
         <header>
             <h1>House of Life Update Manager</h1>
         </header>
-        <div id="main" role="main">"""
+        <p>Copyright &copy; 2011, House of Life Property ltd. All rights reserved.<br />
+           Copyright &copy; 2011, Crystalnix &lt;vgachkaylo@crystalnix.com&gt;</p>
+        <div id="main" role="main">
+          <section id="win_updates">"""
 
         output += """
-            <h2>BitPop</h2>"""
+            <h2>BitPop <img src="/img/windows-logo.png" alt="Windows logo" /></h2>"""
         if not latestExists:
             output += """
-            <p>There are no BitPop updates available.</p>"""
+            <p>There are no BitPop Windows updates available.</p>"""
         else:
             output += """
             <p>Latest BitPop version: {0}</p>""".format(bitpopInfo["latest"])
@@ -105,10 +111,53 @@ class UpdateManager(resource.Resource):
             <p><a href="{1}">Switch to new version ({2})</a></p>""".format(
                 self.pathFromRoot + '/new_delta', self.pathFromRoot + '/switch', bitpopNewInfo['latest'])
         output += """
+          </section>
+          <section id="mac_updates">
+            <h2>BitPop <img src="/img/apple-logo.png" alt="Apple logo" /></h2>"""
+
+        macUpdates = macdb.fetch_several_latest(5)
+        if len(macUpdates) != 0:
+          output += """
+            <p>Latest BitPop version: {0}</p>""".format(macUpdates[0]["version"])
+          output += """
+            <h3>Update files:</h3>
+            <ul>"""
+          
+          activeVersion = None
+          try:
+            activeStream = open(Config.macActiveVersionFile, "r")
+            try:
+              activeVersion = activeStream.readline()
+            finally:
+              activeStream.close()
+          except IOError:
+            pass
+          
+          for upd in macUpdates:
+            output += """
+              <li><a href="{0}">full update v{1}{2}</a></li>""".format(getUpdateURLMac(upd['dmg_path']),
+                                                                       upd['version'],
+                                                                       ' (*)' if upd['version'] == activeVersion 
+                                                                           else ''
+                                                                      )
+          output += """
+            </ul>"""
+#          if macUpdates[0]['version'] != activeVersion:
+#            output += """
+#            <p><a href="{0}">Make latest version active
+        else:
+          output += """
+            <p>There are no BitPop mac updates available.</p>"""
+
+        output += """            
+            <p><a href="{0}">Add new version archive</a></p>""".format(self.pathFromRoot + '/new_mac_full')
+        output += """
+          </section>
         </div>
         <footer>
         </footer>
     </div>
 </body>
 </html>"""
+        macdb.cleanup()
         return output

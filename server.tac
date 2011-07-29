@@ -56,6 +56,7 @@ err.putChild('admin', admin)
 
 root.putChild('css', NoListingDir('css'))
 root.putChild('js', NoListingDir('js'))
+root.putChild('img', NoListingDir('img'))
 
 insecureDomainResource = resource.ForbiddenResource()
 insecureDomainResource.putChild(Config.bitpopDirectory, NoListingDir(Config.bitpopDirectory))
