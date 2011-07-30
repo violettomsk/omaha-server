@@ -55,6 +55,9 @@
     if (document.getElementById('fromVersion')) {
       fd.append("fromVersion", document.getElementById('fromVersion').value);
     }
+    if (document.getElementById('release_notes_text')) {
+      fd.append("releaseNotes", document.getElementById('release_notes_text').value)
+    }
     fd.append("fileToUpload", document.getElementById('fileToUpload').files[0]);
 
     var xhr = new XMLHttpRequest();
@@ -109,7 +112,7 @@
         bytesTransfered = (Math.round(bytesUploaded * 100)/100).toString() + 'Bytes';
 
       document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
-      document.getElementById('progressBar').style.width = (percentComplete * 3.55).toString() + 'px';
+      document.getElementById('progressBar').style.width = (percentComplete * 7.4).toString() + 'px';
       document.getElementById('transferBytesInfo').innerHTML = bytesTransfered;
       if (percentComplete == 100) {
         //document.getElementById('progressInfo').style.display = 'none';

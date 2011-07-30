@@ -32,6 +32,7 @@ from twisted.cred.portal import Portal
 from twisted.cred.checkers import FilePasswordDB
 from auth import PublicHTMLRealm
 import os
+from mac_feed import MacFeedResource
 
 class NoListingDir(File):
   def directoryListing(self):
@@ -64,6 +65,8 @@ insecErr = resource.ForbiddenResource()
 insecureDomainResource.putChild("service", insecErr)
 insecUpd = UpdateXMLProcessor()
 insecErr.putChild("update2", insecUpd)
+insecMacFeed = MacFeedResource()
+insecErr.putChild('mac_feed', insecMacFeed)
 
 httpSite = server.Site(insecureDomainResource)
 httpsSite = server.Site(root)

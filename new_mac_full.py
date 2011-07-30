@@ -23,7 +23,7 @@ import hashlib, base64
 from mac_db_helper import MacDbHelper
 from M2Crypto import EVP, DSA, util
 
-class NewFullResource(resource.Resource):
+class NewMacFullResource(resource.Resource):
     isLeaf = True
     pathFromRoot = '/service/admin/new_mac_full'
 
@@ -37,32 +37,85 @@ class NewFullResource(resource.Resource):
     <title>House of Life Update Manager</title>
 
     <!-- CSS: implied media="all" -->
-    <link rel="stylesheet" href="/css/style.css?v=2">
+    <!--<link rel="stylesheet" href="/css/style.css?v=2">-->
     <link rel="stylesheet" href="/css/upload.css?v=2">
 
     <script type="text/javascript">
         uploadPath = "{0}";
     </script>
-    <script type="text/javascript" src="/js/upload.js"></script>
+    <script type="text/javascript" src="/js/upload.js"></script>""".format(self.pathFromRoot)
+    
+        output += """
+    <!-- Load jQuery -->
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+    	google.load("jquery", "1");
+    </script>
+
+    <!-- Load TinyMCE -->
+    <script type="text/javascript" src="/js/tiny_mce/jquery.tinymce.js"></script>
+    <script type="text/javascript">
+    	$().ready(function() {
+    	    $('textarea.tinymce').tinymce({
+    			// Location of TinyMCE script
+    			script_url : '/js/tiny_mce/tiny_mce.js',
+
+    			// General options
+    			theme : "advanced",
+    			plugins : "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,advlist",
+
+    			// Theme options
+    			theme_advanced_buttons1 : "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
+    			theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
+    			theme_advanced_buttons3 : "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
+    			theme_advanced_buttons4 : "insertlayer,moveforward,movebackward,absolute,|,styleprops,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,pagebreak",
+    			theme_advanced_toolbar_location : "top",
+    			theme_advanced_toolbar_align : "left",
+    			theme_advanced_statusbar_location : "bottom",
+    			theme_advanced_resizing : true,
+
+    			// Example content CSS (should be your site CSS)
+    			content_css : "/css/rel_notes.css" //,
+
+    			// Drop lists for link/image/media/template dialogs
+//    			template_external_list_url : "lists/template_list.js",
+//    			external_link_list_url : "lists/link_list.js",
+//    			external_image_list_url : "lists/image_list.js",
+//    			media_external_list_url : "lists/media_list.js",
+
+    			// Replace values for the template plugin
+//    			template_replace_values : {
+//    				username : "Some User",
+//    				staffid : "991234"
+//    			}
+    		});
+    	});
+    </script>
+    <!-- /TinyMCE -->
 </head>
 <body>
     <div id="container">
         <header>
         </header>
-        <div id="main" role="main">""".format(self.pathFromRoot)
+        <div id="main" role="main">"""
 
         output += """
+            <h1>Upload BitPop mac new version</h1>
             <form id="form1" enctype="multipart/form-data" method="post" action="{0}">
               <div class="row">
                 <label for="newVersion">Input New Version Number</label><br />
                 <input type="text" name="newVersion" id="newVersion" />
               </div>
               <div class="row">
+                <label for="release_notes_text">Release notes</label>
+                <textarea class="tinymce" id="release_notes_text" name="releaseNotes"></textarea>
+              </div>
+              <div class="row">
                 <label for="fileToUpload">Select a File to Upload</label><br />
                 <input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/>
               </div>
               <div class="row">
-              <input type="button" onclick="uploadFile()" value="Upload" />
+              <input type="button" onclick="javascript:tinyMCE.activeEditor.save(); uploadFile();" value="Upload" />
               </div>
               <div id="fileInfo">
                 <div id="fileName"></div>
@@ -115,6 +168,7 @@ class NewFullResource(resource.Resource):
         newRecord['version'] = request.args['newVersion'][0]
         newRecord['dmg_path'] = os.path.join(Config.bitpopDirectory, 'mac', 
                                                 'BitPop-' + newRecord['version'] + '.dmg')
+        newRecord['dmg_size'] = str(len(request.args['fileToUpload'][0]))
 
         outDir = os.path.join(Config.bitpopDirectory, 'mac')
         if not os.path.exists(outDir):
@@ -142,13 +196,13 @@ class NewFullResource(resource.Resource):
             dsa = DSA.load_key(Config.dsaPrivateKeyFile)
             r, s = dsa.sign(digest)
             newRecord['dsa_signature'] = base64.b64encode(r+s)
-            newRecord['rel_notes'] = ""
+            newRecord['rel_notes'] = request.args['releaseNotes'][0];
             
             macdb.insert(newRecord)
             
             activeStream = open(Config.macActiveVersionFile, 'w')
             try:
-              activeStream.write(newRecord['version'])
+              activeStream.write(newRecord['version'] + "\n")
             finally:
               activeStream.close()
         except IOError:

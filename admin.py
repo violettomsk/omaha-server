@@ -22,6 +22,7 @@ from new_delta import NewDeltaResource
 from switch import SwitchResource
 #from mac_update import MacUpdateManager
 from mac_db_helper import MacDbHelper
+from new_mac_full import NewMacFullResource
 from util import *
 
 class UpdateManager(resource.Resource):
@@ -32,6 +33,8 @@ class UpdateManager(resource.Resource):
         resource.Resource.__init__(self)
         self.newFull = NewFullResource()
         self.putChild('new_full', self.newFull)
+        self.newMacFull = NewMacFullResource()
+        self.putChild('new_mac_full', self.newMacFull)
         self.newDelta = NewDeltaResource()
         self.putChild('new_delta', self.newDelta)
         self.switch = SwitchResource()
