@@ -25,7 +25,7 @@ from M2Crypto import EVP, DSA, util
 
 class NewMacFullResource(resource.Resource):
     isLeaf = True
-    pathFromRoot = '/service/admin/new_mac_full'
+    pathFromRoot = '/service/admin/mac/new_full'
 
     def render_GET(self, request):
         output = """<!doctype html>
@@ -101,6 +101,7 @@ class NewMacFullResource(resource.Resource):
 
         output += """
             <h1>Upload BitPop mac new version</h1>
+            
             <form id="form1" enctype="multipart/form-data" method="post" action="{0}">
               <div class="row">
                 <label for="newVersion">Input New Version Number</label><br />

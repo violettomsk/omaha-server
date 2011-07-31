@@ -23,6 +23,8 @@ from switch import SwitchResource
 #from mac_update import MacUpdateManager
 from mac_db_helper import MacDbHelper
 from new_mac_full import NewMacFullResource
+from mac_edit import MacEditResource
+from mac_delete import MacDeleteResource
 from util import *
 
 class UpdateManager(resource.Resource):
@@ -33,12 +35,20 @@ class UpdateManager(resource.Resource):
         resource.Resource.__init__(self)
         self.newFull = NewFullResource()
         self.putChild('new_full', self.newFull)
-        self.newMacFull = NewMacFullResource()
-        self.putChild('new_mac_full', self.newMacFull)
         self.newDelta = NewDeltaResource()
         self.putChild('new_delta', self.newDelta)
         self.switch = SwitchResource()
         self.putChild('switch', self.switch)
+        
+        self.mac = resource.ForbiddenResource()
+        self.newMacFull = NewMacFullResource()
+        self.mac.putChild('new_full', self.newMacFull)
+        self.macEdit = MacEditResource()
+        self.mac.putChild('edit', self.macEdit)
+        self.macDelete = MacDeleteResource()
+        self.mac.putChild('delete', self.macDelete)
+        self.putChild('mac', self.mac)
+        
         self.putChild('', self)
 
     def render_GET(self, request):
@@ -63,9 +73,9 @@ class UpdateManager(resource.Resource):
     <div id="container">
         <header>
             <h1>House of Life Update Manager</h1>
+            <p>Copyright &copy; 2011, House of Life Property ltd. All rights reserved.<br />
+               Copyright &copy; 2011, Crystalnix &lt;vgachkaylo@crystalnix.com&gt;</p>
         </header>
-        <p>Copyright &copy; 2011, House of Life Property ltd. All rights reserved.<br />
-           Copyright &copy; 2011, Crystalnix &lt;vgachkaylo@crystalnix.com&gt;</p>
         <div id="main" role="main">
           <section id="win_updates">"""
 
@@ -138,11 +148,18 @@ class UpdateManager(resource.Resource):
           
           for upd in macUpdates:
             output += """
-              <li><a href="{0}">full update v{1}{2}</a></li>""".format(getUpdateURLMac(upd['dmg_path']),
-                                                                       upd['version'],
-                                                                       ' (*)' if upd['version'] == activeVersion 
-                                                                           else ''
-                                                                      )
+              <li><a href="{0}">full update v{1}{2}</a>""".format(getUpdateURLMac(upd['dmg_path']),
+                                                                  upd['version'],
+                                                                  ' (*)' if upd['version'] == activeVersion 
+                                                                         else ''
+                                                                 )
+            output += """
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <a href="/service/admin/mac/edit/{0}">Edit</a> |
+                  <a href="/service/admin/mac/delete/{0}"
+                    onclick="javascript: return confirm('Are you sure you want to delete this version?');">
+                      Delete
+                  </a>""".format(upd['id'])
           output += """
             </ul>"""
 #          if macUpdates[0]['version'] != activeVersion:

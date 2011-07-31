@@ -28,6 +28,20 @@ class MacDbHelper:
       log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
       sys.exit(1)
   
+  def fetch_by_id(self, id_):
+    try:
+      self.cursor.execute("SELECT \
+            id, version, dmg_path, dmg_size, rel_notes, dsa_signature, UNIX_TIMESTAMP(pub_date) AS pub_ts \
+          FROM MacUpdates \
+          WHERE id='%s'" % (mdb.escape_string(str(id_)), ))
+      return self.cursor.fetchone()
+    except mdb.Error, e:
+      log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
+      sys.exit(1)
+
+    return None
+      
+  
   def fetch_latest(self):
     try:
       self.cursor.execute("SELECT \
@@ -78,17 +92,17 @@ class MacDbHelper:
          mdb.escape_string(insertInfo['dmg_size']),         
          mdb.escape_string(updateInfo['rel_notes']),
          mdb.escape_string(updateInfo['dsa_signature']),
-         mdb.escape_string(updateInfo['id'])
+         mdb.escape_string(str(updateInfo['id']))
         ))
       self.conn.commit()
     except mdb.Error, e:
       log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
       sys.exit(1)
       
-  def delete(self, id):
+  def delete(self, id_):
     try:
       self.cursor.execute("DELETE FROM MacUpdates WHERE id='%s'" %
-        (mdb.escape_string(id)) 
+        (mdb.escape_string(str(id_))) 
       )
       self.conn.commit()
     except mdb.Error, e:
