@@ -170,7 +170,7 @@ class UpdateManager(resource.Resource):
             <p>There are no BitPop mac updates available.</p>"""
 
         output += """            
-            <p><a href="{0}">Add new version archive</a></p>""".format(self.pathFromRoot + '/new_mac_full')
+            <p><a href="{0}">Add new version archive</a></p>""".format(self.pathFromRoot + '/mac/new_full')
         output += """
           </section>
         </div>

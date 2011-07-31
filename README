@@ -1,4 +1,5 @@
 Simple Google Omaha server implementation.
++ added Sparkle (mac) feed management
 Copyright (C) 2011 Crystalnix <vgachkaylo@crystalnix.com>
 
 Developed for Python 2.6.6.
@@ -7,10 +8,11 @@ May work on newer versions of Python.
 Depends on:
     twistd python framework
     pyOpenSSL
+    M2Crypto
 
 Launch:
     $ twistd -ny server.tac
-    Then go to https://localhost/service/admin to use
+    Then go to https://localhost:8083/service/admin to use
     the administration interface.
 
 Comments:

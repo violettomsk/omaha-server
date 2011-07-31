@@ -1,6 +1,7 @@
 from twisted.web import resource
 from mac_db_helper import MacDbHelper
-import re
+from config import Config
+import re, os
 
 class MacDeleteResource(resource.Resource):
   pathFromRoot = "/service/admin/mac/delete"
@@ -15,7 +16,36 @@ class MacDeleteResource(resource.Resource):
     update_id = m.groups()[0]
     
     macdb = MacDbHelper()
-    upd = macdb.delete(int(update_id))
+    upd = macdb.fetch_by_id(int(update_id))
+    
+    if upd == None:
+      request.setResponseCode(404) # Bad request
+      return "Error: Not found."
+      
+    macdb.delete(int(update_id))
+    
+    try:
+      activeStream = open(Config.macActiveVersionFile, 'r')
+      try:
+        vt = activeStream.readline().strip(' \t\n\r')
+      finally:
+        activeStream.close()
+
+      if vt == upd['version']:
+        newLatest = macdb.fetch_latest()
+        if newLatest == None:
+          #delete file
+          os.remove(Config.macActiveVersionFile)
+        else:
+          activeStream = open(Config.macActiveVersionFile, 'w')
+          try:
+            activeStream.write(newLatest['version'] + '\n')
+          finally:
+            activeStream.close()
+          
+    except IOError:
+      pass
+    
     macdb.cleanup()
         
     return """<!DOCTYPE html>
