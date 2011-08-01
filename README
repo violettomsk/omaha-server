@@ -8,7 +8,7 @@ May work on newer versions of Python.
 Depends on:
     twistd python framework
     pyOpenSSL
-    M2Crypto
+    mysql-python
 
 Launch:
     $ twistd -ny server.tac

@@ -19,9 +19,10 @@ import os, re, json
 from twisted.web import resource
 from config import Config
 from util import *
-import hashlib, base64
+#import hashlib, base64
 from mac_db_helper import MacDbHelper
-from M2Crypto import EVP, DSA, util
+#from M2Crypto import EVP, DSA, util
+import os
 
 class NewMacFullResource(resource.Resource):
     isLeaf = True
@@ -190,13 +191,22 @@ class NewMacFullResource(resource.Resource):
 #            sha.update(request.args['fileToUpload'][0])
 #            hash = base64.b64encode(sha.digest())
             
-            md = EVP.MessageDigest('sha1')
-            md.update(request.args['fileToUpload'][0])
-            digest = md.final()
+            os.system('openssl dgst -sha1 -binary < "{0}" | openssl dgst -dss1 -sign "dsa_priv.pem" | \
+                       openssl enc -base64 > sig.txt'.format(filename))
             
-            dsa = DSA.load_key(Config.dsaPrivateKeyFile)
-            r, s = dsa.sign(digest)
-            newRecord['dsa_signature'] = base64.b64encode(r+s)
+            sig = open('sig.txt', 'r')
+            try:
+              tsig = sig.readline()
+            finally:
+              sig.close()
+            
+            # md = EVP.MessageDigest('sha1')
+            # md.update(request.args['fileToUpload'][0])
+            # digest = md.final()
+            # 
+            # dsa = DSA.load_key(Config.dsaPrivateKeyFile)
+            # sig = dsa.sign_asn1(digest)
+            newRecord['dsa_signature'] = tsig.strip('\n\r\t ')
             newRecord['rel_notes'] = request.args['releaseNotes'][0];
             
             macdb.insert(newRecord)
