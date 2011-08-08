@@ -225,7 +225,18 @@ h2 img {
   vertical-align: middle;
 }
 
+form {
+  margin-bottom: 1.3em;
+}
 
+form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+form input {
+  margin-left: 10px;
+}
 
 
 /**

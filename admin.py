@@ -25,6 +25,7 @@ from mac_db_helper import MacDbHelper
 from new_mac_full import NewMacFullResource
 from mac_edit import MacEditResource
 from mac_delete import MacDeleteResource
+from uncensor_manage import UncensorManageResource
 from util import *
 
 class UpdateManager(resource.Resource):
@@ -48,6 +49,9 @@ class UpdateManager(resource.Resource):
         self.macDelete = MacDeleteResource()
         self.mac.putChild('delete', self.macDelete)
         self.putChild('mac', self.mac)
+        
+        self.uncensor_manage = UncensorManageResource()
+        self.putChild('uncensor', self.uncensor_manage)
         
         self.putChild('', self)
 

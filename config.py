@@ -22,6 +22,28 @@ if os.name == 'posix':
 class Config:
     isProduction = False
   
+    # DB config
+    dbTestHost = 'localhost'
+    dbTestUser = 'root'
+    dbTestPwd = ''
+    dbTestDbName = 'omaha'
+    
+    dbProdHost = 'localhost'
+    dbProdUser = 'toolsbit_omaha'
+    dbProdPwd = ''
+    dbProdDbName = 'toolsbit_omaha'
+
+    if isProduction:
+      dbHost = dbProdHost
+      dbUser = dbProdUser
+      dbPwd = dbProdPwd
+      dbDbName = dbProdDbName
+    else:
+      dbHost = dbTestHost
+      dbUser = dbTestUser
+      dbPwd = dbTestPwd
+      dbDbName = dbTestDbName
+  
     # SSL config
     useCertificateChain = True
     certificateChainFile = 'cert/gd_bundle.crt'
@@ -31,7 +53,11 @@ class Config:
     # Network config
     httpPort = 8081
     httpsPort = 8083
-    domainName = 'localhost'
+    if isProduction:
+      domainName = 'tools.bitpop.com'
+    else:
+      domainName = 'localhost'
+      
     secureDomain = 'https://' + domainName
     insecureDomain = 'http://' + domainName
     

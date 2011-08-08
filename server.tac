@@ -33,6 +33,7 @@ from twisted.cred.checkers import FilePasswordDB
 from auth import PublicHTMLRealm
 import os
 from mac_feed import MacFeedResource
+from uncensor_out import UncensorOutResource
 
 class NoListingDir(File):
   def directoryListing(self):
@@ -49,6 +50,8 @@ err = resource.ForbiddenResource()
 root.putChild("service", err)
 upd = UpdateXMLProcessor()
 err.putChild("update2", upd)
+uncen = UncensorOutResource()
+err.putChild("uncensor_domains", uncen)
 
 portal = Portal(PublicHTMLRealm(), [FilePasswordDB('httpd.password')])
 credentialFactory = DigestCredentialFactory("md5", "House of Life Updates")

@@ -1,11 +1,12 @@
 from twisted.python import log
 import MySQLdb as mdb
 import sys
+from config import Config
 
 class MacDbHelper:
   def __init__(self):
     try:
-      self.conn = mdb.connect('localhost', 'root', '', 'omaha')
+      self.conn = mdb.connect(Config.dbHost, Config.dbUser, Config.dbPwd, Config.dbDbName)
       self.cursor = self.conn.cursor(mdb.cursors.DictCursor)
       self.cursor.execute("CREATE TABLE IF NOT EXISTS \
               MacUpdates(id INT PRIMARY KEY AUTO_INCREMENT, \
@@ -15,6 +16,10 @@ class MacDbHelper:
                          rel_notes TEXT, \
                          dsa_signature VARCHAR(100), \
                          pub_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+      self.cursor.execute("CREATE TABLE IF NOT EXISTS \
+              UncensorDomains(id INT PRIMARY KEY AUTO_INCREMENT, \
+                              srcDomain VARCHAR(255), \
+                              dstDomain VARCHAR(255))")
       self.conn.commit()
     except mdb.Error, e:
       log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
@@ -28,6 +33,8 @@ class MacDbHelper:
       log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
       sys.exit(1)
   
+  # Following methods are working with MacUpdates table
+  # ===================================================
   def fetch_by_id(self, id_):
     try:
       self.cursor.execute("SELECT \
@@ -89,7 +96,7 @@ class MacDbHelper:
         WHERE id='%s'" %
         (mdb.escape_string(updateInfo['version']), 
          mdb.escape_string(updateInfo['dmg_path']),
-         mdb.escape_string(insertInfo['dmg_size']),         
+         mdb.escape_string(updateInfo['dmg_size']),         
          mdb.escape_string(updateInfo['rel_notes']),
          mdb.escape_string(updateInfo['dsa_signature']),
          mdb.escape_string(str(updateInfo['id']))
@@ -108,3 +115,46 @@ class MacDbHelper:
     except mdb.Error, e:
       log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
       sys.exit(1)        
+      
+  def uncensor_fetch_by_id(self, id_):
+    try:
+      self.cursor.execute("SELECT id, srcDomain, dstDomain  \
+          FROM UncensorDomains \
+          WHERE id='%s'" % (mdb.escape_string(str(id_)), ))
+      return self.cursor.fetchone()
+    except mdb.Error, e:
+      log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
+      sys.exit(1)
+
+    return None
+    
+  def uncensor_fetch_all(self):
+    try:
+      self.cursor.execute("SELECT id, srcDomain, dstDomain FROM UncensorDomains ORDER BY srcDomain ASC")
+      return self.cursor.fetchall()
+    except mdb.Error, e:
+      log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
+      sys.exit(1)
+
+    return []
+    
+  def uncensor_insert(self, insertInfo):
+    try:
+      self.cursor.execute("INSERT INTO UncensorDomains SET srcDomain='%s', dstDomain='%s'" %
+        (mdb.escape_string(insertInfo['srcDomain']), 
+         mdb.escape_string(insertInfo['dstDomain'])
+        ))
+      self.conn.commit()
+    except mdb.Error, e:
+      log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
+      sys.exit(1)
+  
+  def uncensor_delete(self, id_):
+    try:
+      self.cursor.execute("DELETE FROM UncensorDomains WHERE id='%s'" %
+        (mdb.escape_string(str(id_))) 
+      )
+      self.conn.commit()
+    except mdb.Error, e:
+      log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
+      sys.exit(1)
