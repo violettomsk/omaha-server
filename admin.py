@@ -27,6 +27,7 @@ from mac_edit import MacEditResource
 from mac_delete import MacDeleteResource
 from uncensor_manage import UncensorManageResource
 from util import *
+import os
 
 class UpdateManager(resource.Resource):
     isLeaf = False
@@ -128,6 +129,14 @@ class UpdateManager(resource.Resource):
             <p><a href="{1}">Switch to new version ({2})</a></p>""".format(
                 self.pathFromRoot + '/new_delta', self.pathFromRoot + '/switch', bitpopNewInfo['latest'])
         output += """
+            <p>
+                <form style="display:none" id="clear_all" method="POST">
+                  <input type="hidden" name="action" value="delete" />
+                </form>
+                <a href="javascript:void(0)" onclick="(function () { document.getElementById('clear_all').submit();})()">
+                   Clear all updates
+                </a>
+            </p>
           </section>
           <section id="mac_updates">
             <h2>BitPop <img src="/img/apple-logo.png" alt="Apple logo" /></h2>"""
@@ -185,3 +194,22 @@ class UpdateManager(resource.Resource):
 </html>"""
         macdb.cleanup()
         return output
+        
+    def render_POST(self, request):
+        if ('action' in request.args) and (request.args['action'][0] == 'delete'):
+            try:
+                os.remove(Config.bitpopUpdateInfoFile)
+            except OSError:
+                pass
+            try:
+                os.remove(Config.bitpopNewUpdateInfoFile)
+            except OSError:
+                pass
+                
+            request.setResponseCode(301)
+            request.setHeader('Location', self.pathFromRoot)
+        else:
+            request.setResponseCode(400)
+            return 'Bad request'
+        
+        return 'OK'
