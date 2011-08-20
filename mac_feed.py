@@ -32,7 +32,7 @@ class MacFeedResource(resource.Resource):
                 <description><![CDATA[
                   {1}
                 ]]></description>
-     						<pubDate>{2}</pubDate>
+                <pubDate>{2}</pubDate>
                 <enclosure url="{3}" sparkle:version="{0}" length="{4}" type="application/octet-stream" sparkle:dsaSignature="{5}" />
              </item>""".format(item['version'], item['rel_notes'], 
                                strftime("%a, %d %b %Y %H:%M:%S +0000", 
