@@ -188,9 +188,9 @@ class MacDbHelper:
 
   def uncensorp_fetch_by_iso(self, iso_code):
     try:
-      self.cursor.execute("SELECT id, domain, iso FROM UncensorProxy WHERE iso='%s' \
+      self.cursor.execute("SELECT domain FROM UncensorProxy WHERE iso='%s' \
             ORDER BY domain ASC"
-            % (mdb_escape_string(iso_code)))
+            % (mdb.escape_string(iso_code)))
       return self.cursor.fetchall()
     except mdb.Error, e:
       log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))

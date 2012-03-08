@@ -34,6 +34,7 @@ from auth import PublicHTMLRealm
 import os
 from mac_feed import MacFeedResource
 from uncensor_out import UncensorOutResource
+from uncensorp_out import UncensorPOutResource
 
 class NoListingDir(File):
   def directoryListing(self):
@@ -70,6 +71,8 @@ insecMacFeed = MacFeedResource()
 insecErr.putChild('mac_feed', insecMacFeed)
 uncen = UncensorOutResource()
 insecErr.putChild("uncensor_domains", uncen)
+uncenp = UncensorPOutResource()
+insecErr.putChild("uncensorp_domains", uncenp)
 
 httpSite = server.Site(insecureDomainResource)
 httpsSite = server.Site(root)
