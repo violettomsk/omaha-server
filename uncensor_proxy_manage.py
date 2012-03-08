@@ -79,28 +79,29 @@ class UncensorProxyManageResource(resource.Resource):
 </head>
 <body>
 <div id="container">
-    <header>
-      <h1>Uncensor domains</h1>
-      <p>Copyright &copy; 2011, House of Life Property ltd. All rights reserved.<br />
-         Copyright &copy; 2011, Crystalnix &lt;vgachkaylo@crystalnix.com&gt;</p>
-    </header>
-    <div id="main" role="main">
-      <div id="banner">
-        %s
-      </div>
-    
-      <p>
-        <a href="javascript:void(0)" onclick="javascript:$('#add_form').show(); return false;">Add domain pair</a>
-      </p>
+  <header>
+    <h1>Uncensor Proxy domains</h1>
+    <p>Copyright &copy; 2012, House of Life Property ltd. All rights reserved.<br />
+       Copyright &copy; 2012, Crystalnix &lt;vgachkaylo@crystalnix.com&gt;</p>
+  </header>
+  <div id="main" role="main">
+    <div id="banner">
+      %s
+    </div>
+
+    <p>
+      <a href="javascript:void(0)" onclick="javascript:$('#add_form').show(); return false;">Add domain pair</a>
+    </p>
       
-      <form id="add_form" style="display:none" method="post">
-        <label for="countries">
-          Country:
-          <select id="countries" name="iso">
-            <option value="">Choose from list...</option>""" % (msg)
+    <form id="add_form" style="display:none" method="post">
+      <label for="countries">
+        Country:
+        <select id="countries" name="iso">
+          <option value="">Choose from list...</option>""" % (msg)
+
     country_list = list(pycountry.countries)
     for country in country_list:
-      output += '\n<option value="' + country.alpha2 + '">' + country.name + '</option>'
+      output += '<option value="' + country.alpha2.encode('utf-8') + '">' + country.name.encode('utf-8') + '</option>'
 
     output += """
           </select>
@@ -176,7 +177,7 @@ class UncensorProxyManageResource(resource.Resource):
       else:
         request.setHeader('Location', self.pathFromRoot + '?msg=' + urllib.quote_plus('Error. Record not found.'))
     elif request.args['action'][0] == 'add':
-      if (not ('srcDomain' in request.args)) or (not ('dstDomain' in request.args)):
+      if (not ('domain' in request.args)) or (not ('iso' in request.args)):
         request.setResponseCode(400)
         return 'Error 400. Bad request.'
       
