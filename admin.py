@@ -26,6 +26,7 @@ from new_mac_full import NewMacFullResource
 from mac_edit import MacEditResource
 from mac_delete import MacDeleteResource
 from uncensor_manage import UncensorManageResource
+from uncensor_proxy_manage import UncensorProxyManageResource
 from util import *
 import os
 
@@ -53,7 +54,10 @@ class UpdateManager(resource.Resource):
         
         self.uncensor_manage = UncensorManageResource()
         self.putChild('uncensor', self.uncensor_manage)
-        
+
+        self.uncensor_proxy_manage = UncensorProxyManageResource()
+        self.putChild('uncensorp', self.uncensor_proxy_manage)
+
         self.putChild('', self)
 
     def render_GET(self, request):

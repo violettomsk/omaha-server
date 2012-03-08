@@ -58,6 +58,6 @@ def versionCompare(v1, v2):
     v1s = v1.split('.')
     v2s = v2.split('.')
     for x, y in zip(v1s, v2s):
-        if x < y: return -1;
-        if x > y: return 1;
+        if int(x) < int(y): return -1;
+        if int(x) > int(y): return 1;
     return 0

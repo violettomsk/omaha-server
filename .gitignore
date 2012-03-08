@@ -11,3 +11,5 @@ cert/*
 *.zip
 *.rar
 *.7z
+dsa_priv.pem
+mac_active.txt

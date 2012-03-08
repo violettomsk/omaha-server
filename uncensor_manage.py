@@ -22,6 +22,7 @@ class UncensorManageResource(resource.Resource):
 
 <!-- CSS: implied media="all" -->
 <link rel="stylesheet" href="/css/style.css?v=2">
+<link rel="stylesheet" href="/css/uncensor_domains.css">
 
 <!-- Load jQuery -->
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
@@ -54,26 +55,13 @@ class UncensorManageResource(resource.Resource):
 </script>
 
 <style type="text/css">
-  #domains {
-    width: 500px;
-    border: 1px solid #ccc;
-  }
-  #domains th {
-    text-align: left;
-  }
-  #banner {
-    border: 1px solid #ccf;
-    padding: 10px;
-    font-weight: bold;"""
+  #banner {"""
     
     if msg == "":
       output += """
     display:none;"""
     
     output += """
-  }
-  .even-row {
-    background-color: #eef;
   }
 </style>
 
