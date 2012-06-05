@@ -39,7 +39,21 @@ from uncensorp_out import UncensorPOutResource
 class NoListingDir(File):
   def directoryListing(self):
     return resource.ForbiddenResource()
-    
+
+class LatestMacResource(resource.Resource):
+  isLeaf = True
+
+  def render_GET(self, request):
+    try:
+      f = open(Config.macActiveVersionFile, "r")
+      vernum = f.readline().strip("\r\n\t ")
+    except IOError:
+      return resource.NoResource().render_GET(request)
+
+    pathToFile = Config.bitpopDirectory + '/mac/BitPop-' + vernum + '.dmg'
+
+    return File(pathToFile).render_GET(request)
+
 if not os.path.exists(Config.bitpopDirectory):
     os.mkdir(Config.bitpopDirectory, 0755)
 if not os.path.isdir(Config.bitpopDirectory):
@@ -62,7 +76,9 @@ root.putChild('js', NoListingDir('js'))
 root.putChild('img', NoListingDir('img'))
 
 insecureDomainResource = resource.ForbiddenResource()
-insecureDomainResource.putChild(Config.bitpopDirectory, NoListingDir(Config.bitpopDirectory))
+bitpopDir = NoListingDir(Config.bitpopDirectory)
+bitpopDir.putChild('BitPop.dmg', LatestMacResource())
+insecureDomainResource.putChild(Config.bitpopDirectory, bitpopDir)
 insecErr = resource.ForbiddenResource()
 insecureDomainResource.putChild("service", insecErr)
 insecUpd = UpdateXMLProcessor()
