@@ -76,8 +76,20 @@ root.putChild('js', NoListingDir('js'))
 root.putChild('img', NoListingDir('img'))
 
 insecureDomainResource = resource.ForbiddenResource()
+
 bitpopDir = NoListingDir(Config.bitpopDirectory)
+
 bitpopDir.putChild('BitPop.dmg', LatestMacResource())
+
+bitpopDir.putChild('HouseOfLifeInstaller.application', \
+  File('clickonce/HouseOfLifeInstaller.application', 'application/x-ms-application'))
+bitpopDir.putChild('clickonce_bootstrap.exe.manifest', \
+  File('clickonce/clickonce_bootstrap.exe.manifest', 'application/x-ms-manifest'))
+bitpopDir.putChild('HouseOfLifeUpdateSetup.exe', \
+  File('clickonce/bin/HouseOfLifeUpdateSetup.exe'))
+bitpopDir.putChild('clickonce_bootstrap.exe',
+  File('clickonce/bin/clickonce_bootstrap.exe'))
+
 insecureDomainResource.putChild(Config.bitpopDirectory, bitpopDir)
 insecErr = resource.ForbiddenResource()
 insecureDomainResource.putChild("service", insecErr)
@@ -113,3 +125,4 @@ httpsService = internet.SSLServer(Config.httpsPort, httpsSite,
                                   interface=Config.domainName)
 httpService.setServiceParent(application)
 httpsService.setServiceParent(application)
+
