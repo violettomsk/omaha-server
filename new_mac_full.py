@@ -20,7 +20,7 @@ from twisted.web import resource
 from config import Config
 from util import *
 #import hashlib, base64
-from mac_db_helper import MacDbHelper
+from db_helper import DbHelper
 #from M2Crypto import EVP, DSA, util
 import os
 
@@ -153,7 +153,7 @@ class NewMacFullResource(resource.Resource):
         return output
 
     def render_POST(self, request):
-        macdb = MacDbHelper()
+        macdb = DbHelper()
         
         versionRegex = re.compile('^\d+\.\d+\.\d+\.\d+$')
         if not versionRegex.match(request.args['newVersion'][0]):

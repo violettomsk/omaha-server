@@ -1,5 +1,5 @@
 from twisted.web import resource
-from mac_db_helper import MacDbHelper
+from db_helper import DbHelper
 from config import Config
 from util import *
 from time import strftime
@@ -11,7 +11,7 @@ class MacFeedResource(resource.Resource):
   
   def render_GET(self, request):
     request.setHeader('Content-Type', 'application/rss+xml')
-    macdb = MacDbHelper()
+    macdb = DbHelper()
     items = macdb.fetch_several_latest(5)
     
     output = """<?xml version="1.0" encoding="utf-8"?>

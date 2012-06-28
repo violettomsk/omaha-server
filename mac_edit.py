@@ -1,5 +1,5 @@
 from twisted.web import resource
-from mac_db_helper import MacDbHelper
+from db_helper import DbHelper
 import re, cgi
 
 class MacEditResource(resource.Resource):
@@ -14,7 +14,7 @@ class MacEditResource(resource.Resource):
       return "Error: Bad request."
     update_id = m.groups()[0]
     
-    macdb = MacDbHelper()
+    macdb = DbHelper()
     upd = macdb.fetch_by_id(int(update_id))
     macdb.cleanup()
     
@@ -110,7 +110,7 @@ class MacEditResource(resource.Resource):
       request.setResponseCode(400) # Bad request
       return "Error: Bad request."
     
-    macdb = MacDbHelper()
+    macdb = DbHelper()
     upd = macdb.fetch_by_id(int(request.args['rec_id'][0]))
     
     if upd == None:

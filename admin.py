@@ -21,7 +21,7 @@ from new_full import NewFullResource
 from new_delta import NewDeltaResource
 from switch import SwitchResource
 #from mac_update import MacUpdateManager
-from mac_db_helper import MacDbHelper
+from db_helper import DbHelper
 from new_mac_full import NewMacFullResource
 from mac_edit import MacEditResource
 from mac_delete import MacDeleteResource
@@ -61,7 +61,7 @@ class UpdateManager(resource.Resource):
         self.putChild('', self)
 
     def render_GET(self, request):
-        macdb = MacDbHelper()
+        macdb = DbHelper()
         
         mainDict = loadJsonAndCheckIfLatestKeyExists(Config.bitpopUpdateInfoFile)
         bitpopInfo = mainDict['jsonData']

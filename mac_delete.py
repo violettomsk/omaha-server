@@ -1,5 +1,5 @@
 from twisted.web import resource
-from mac_db_helper import MacDbHelper
+from db_helper import DbHelper
 from config import Config
 import re, os
 
@@ -15,7 +15,7 @@ class MacDeleteResource(resource.Resource):
       return "Error: Bad request."
     update_id = m.groups()[0]
     
-    macdb = MacDbHelper()
+    macdb = DbHelper()
     upd = macdb.fetch_by_id(int(update_id))
     
     if upd == None:

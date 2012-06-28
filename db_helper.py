@@ -3,7 +3,7 @@ import MySQLdb as mdb
 import sys
 from config import Config
 
-class MacDbHelper:
+class DbHelper:
   def __init__(self):
     try:
       self.conn = mdb.connect(Config.dbHost, Config.dbUser, Config.dbPwd, Config.dbDbName)
@@ -24,6 +24,16 @@ class MacDbHelper:
               UncensorProxy(id INT PRIMARY KEY AUTO_INCREMENT, \
                             domain VARCHAR(255), \
                             iso CHAR(2))")
+      self.cursor.execute("CREATE TABLE IF NOT EXISTS \
+              UsageStats(id INT PRIMARY KEY AUTO_INCREMENT, \
+                         stats_date DATE, \
+                         version VARCHAR(64), \
+                         mac_uncensor_requests INTEGER UNSIGNED, \
+                         win_uncensor_requests INTEGER UNSIGNED, \
+                         UNIQUE(stats_date), \
+                         CONSTRAINT dateVersion UNIQUE (stats_date, version) \
+                        )")
+
       self.conn.commit()
     except mdb.Error, e:
       log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
@@ -218,3 +228,22 @@ class MacDbHelper:
     except mdb.Error, e:
       log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
       sys.exit(1)
+
+  def stats_add(self, version, os):
+    try:
+      if (os == 'win'):
+        self.cursor.execute("INSERT INTO UsageStats (stats_date, version, \
+            mac_uncensor_requests, win_uncensor_requests) VALUES \
+            (DATE(NOW()), '%s', 0, 1) ON DUPLICATE KEY UPDATE \
+              win_uncensor_requests=win_uncensor_requests+1" % version)
+      elif (os == 'mac')
+        self.cursor.execute("INSERT INTO UsageStats (stats_date, version, \
+            mac_uncensor_requests, win_uncensor_requests) VALUES \
+            (DATE(NOW()), '%s', 1, 0) ON DUPLICATE KEY UPDATE \
+              mac_uncensor_requests=mac_uncensor_requests+1" % version)
+
+      self.conn.commit()
+    except mdb.Error, e:
+      log.msg("MySQL error %d: %s" % (e.args[0],e.args[1]))
+      sys.exit(1)
+

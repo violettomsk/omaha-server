@@ -1,5 +1,5 @@
 from twisted.web import resource
-from mac_db_helper import MacDbHelper
+from db_helper import DbHelper
 from config import Config
 import urllib
 import pycountry
@@ -9,7 +9,7 @@ class UncensorProxyManageResource(resource.Resource):
   pathFromRoot = '/service/admin/uncensorp'
 
   def render_GET(self, request):
-    macdb = MacDbHelper()
+    macdb = DbHelper()
     res = macdb.uncensorp_fetch_all()
     msg = request.args['msg'][0] if 'msg' in request.args else ''
     
@@ -159,7 +159,7 @@ class UncensorProxyManageResource(resource.Resource):
     return output
     
   def render_POST(self, request):
-    macdb = MacDbHelper()
+    macdb = DbHelper()
     
     if not 'action' in request.args:
       request.setResponseCode(400)
