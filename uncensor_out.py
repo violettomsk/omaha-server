@@ -14,7 +14,7 @@ class UncensorOutResource(resource.Resource):
     if ua != None:
       ua = ua[0]
       x2 = ua.split()[1]
-      os = (x2.find('Windows') != -1) ? 'win' : ((x2.find('Mac OS') != -1) ? 'mac' : None)
+      os = 'win' if (x2.find('Windows') != -1) else 'mac' if (x2.find('Mac OS') != -1) else None
 
       matchObj = re.match( r'BitPop/(\d+\.\d+\.\d+\.\d+)', ua) # get version
 
