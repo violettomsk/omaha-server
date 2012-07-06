@@ -13,7 +13,7 @@ class UncensorPOutResource(resource.Resource):
   isLeaf = True
   pathFromRoot = '/service/uncensorp_domains'
 
-def render_GET(self, request):
+  def render_GET(self, request):
     gi = pygeoip.GeoIP('GeoIP.dat', pygeoip.MEMORY_CACHE)
     country_code = gi.country_code_by_addr(request.getHeader('x-forwarded-for'))
 
