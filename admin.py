@@ -97,6 +97,10 @@ class UpdateManager(resource.Resource):
             output += """
             <p>Latest BitPop version: {0}</p>""".format(bitpopInfo["latest"])
             output += """
+            <p><a href="http://tools.bitpop.com/bitpop/HouseOfLifeUpdateSetup.exe">BitPop and Updates latest installer</a></p>"""
+            output += """
+            <p><a href="http://tools.bitpop.com/bitpop/HouseOfLifeInstaller.application">IE install link</a></p>"""
+            output += """
             <h3>Update files</h3>
             <ul>
                 <li><a href="{0}">full update v{1}</a></li>""".format(getUpdateURL(bitpopInfo['latest']),
@@ -150,6 +154,8 @@ class UpdateManager(resource.Resource):
           output += """
             <p>Latest BitPop version: {0}</p>""".format(macUpdates[0]["version"])
           output += """
+            <p><a href="http://tools.bitpop.com/bitpop/BitPop.dmg">Latest BitPop permanent link</a></p>"""
+          output += """
             <h3>Update files:</h3>
             <ul>"""
           
@@ -197,7 +203,7 @@ class UpdateManager(resource.Resource):
 </body>
 </html>"""
         macdb.cleanup()
-        return output
+        return output.replace('/bitpop/mac/bitpop/mac', '/bitpop/mac')
         
     def render_POST(self, request):
         if ('action' in request.args) and (request.args['action'][0] == 'delete'):

@@ -92,6 +92,7 @@ bitpopDir.putChild('clickonce_bootstrap.exe',
 
 insecureDomainResource.putChild(Config.bitpopDirectory, bitpopDir)
 insecErr = resource.ForbiddenResource()
+insecureDomainResource.putChild("ext", NoListingDir("./ext", 'application/octet-stream'))
 insecureDomainResource.putChild("service", insecErr)
 insecUpd = UpdateXMLProcessor()
 insecErr.putChild("update2", insecUpd)
