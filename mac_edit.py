@@ -34,7 +34,7 @@ class MacEditResource(resource.Resource):
 <link rel="stylesheet" href="/css/style.css?v=2">
 
 <!-- Load jQuery -->
-<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
 	google.load("jquery", "1");
 </script>
