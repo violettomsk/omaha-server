@@ -1,6 +1,6 @@
 Simple Google Omaha server implementation.
 + added Sparkle (mac) feed management
-Copyright (C) 2011 Crystalnix <vgachkaylo@crystalnix.com>
+Copyright (C) 2014 Crystalnix <contacts@crystalnix.com>
 
 Developed for Python 2.6.6.
 May work on newer versions of Python.
