@@ -1,0 +1,98 @@
+FROM alpine:edge
+
+ENV omaha /srv/omaha
+
+# Build nginx 1.10
+RUN \
+  build_pkgs="build-base linux-headers openssl-dev pcre-dev wget zlib-dev" && \
+  runtime_pkgs="ca-certificates openssl pcre zlib" && \
+  apk --update add ${build_pkgs} ${runtime_pkgs} && \
+  cd /tmp && \
+  wget http://nginx.org/download/nginx-1.10.0.tar.gz && \
+  tar xzf nginx-1.10.0.tar.gz && \
+  cd /tmp/nginx-1.10.0 && \
+  ./configure \
+    --prefix=/etc/nginx \
+    --sbin-path=/usr/sbin/nginx \
+    --conf-path=/etc/nginx/nginx.conf \
+    --error-log-path=/var/log/nginx/error.log \
+    --http-log-path=/var/log/nginx/access.log \
+    --pid-path=/var/run/nginx.pid \
+    --lock-path=/var/run/nginx.lock \
+    --http-client-body-temp-path=/var/cache/nginx/client_temp \
+    --http-proxy-temp-path=/var/cache/nginx/proxy_temp \
+    --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
+    --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
+    --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
+    --user=nginx \
+    --group=nginx \
+    --with-http_ssl_module \
+    --with-http_realip_module \
+    --with-http_addition_module \
+    --with-http_sub_module \
+    --with-http_dav_module \
+    --with-http_flv_module \
+    --with-http_mp4_module \
+    --with-http_gunzip_module \
+    --with-http_gzip_static_module \
+    --with-http_random_index_module \
+    --with-http_secure_link_module \
+    --with-http_stub_status_module \
+    --with-http_auth_request_module \
+    --with-mail \
+    --with-mail_ssl_module \
+    --with-file-aio \
+    --with-http_v2_module \
+    --with-ipv6 \
+    --with-threads \
+    --with-stream \
+    --with-stream_ssl_module \
+    --with-http_slice_module && \
+  make && \
+  make install && \
+  sed -i -e 's/#access_log  logs\/access.log  main;/access_log \/dev\/stdout;/' -e 's/#error_log  logs\/error.log  notice;/error_log stderr notice;/' /etc/nginx/nginx.conf && \
+  adduser -D nginx && \
+  rm -rf /tmp/* && \
+  apk del ${build_pkgs} && \
+  rm -rf /var/cache/apk/* && \
+  mkdir /var/cache/nginx/ && \
+  chmod -R 777 /var/cache/nginx/
+
+RUN apk --update add bash ca-certificates && \
+    # apk --update add nginx python supervisor uwsgi uwsgi-python py-pip && \
+    apk --update add python supervisor uwsgi uwsgi-python py-pip && \
+    apk --update add --virtual dev-deps python-dev build-base && \
+    apk --update add py-lxml py-psycopg2 py-pillow && \
+    apk --update add fuse-dev libxml2-dev libcurl curl-dev libstdc++ && \
+    apk --update add --virtual fuse-deps autoconf automake libtool pkgconfig openssl-dev wget tar && \
+
+    # Setup s3fs
+    mkdir /usr/src && \
+    wget --no-check-certificate https://github.com/s3fs-fuse/s3fs-fuse/archive/v1.78.tar.gz -O /usr/src/v1.78.tar.gz && \
+    tar xvz -C /usr/src -f /usr/src/v1.78.tar.gz && \
+    cd /usr/src/s3fs-fuse-1.78 && \
+    ./autogen.sh && \
+    ./configure --prefix=/usr && \
+    make && \
+    make install && \
+    mkdir -p /srv/omaha_s3 && \
+    rm /usr/src/v1.78.tar.gz && \
+
+    # cleanup
+    rm -rf /var/cache/apk/* && \
+    apk del fuse-deps dev-deps && \
+
+    # prepare
+    mkdir -p $omaha/requirements
+
+
+# RUN mkdir -p $omaha/requirements
+WORKDIR ${omaha}
+
+ADD ./requirements/base.txt $omaha/requirements/base.txt
+
+RUN \
+  pip install paver && \
+  pip install --upgrade six && \
+  pip install -r requirements/base.txt && \
+  rm -rf /root/.cache/pip/
